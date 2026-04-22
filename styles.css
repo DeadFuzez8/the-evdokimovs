@@ -28,11 +28,6 @@ body {
     overflow-x: hidden;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
 
 /* Декоративные лепестки */
 .floating-petals {
@@ -188,8 +183,9 @@ body {
 
 .hero-image-wrapper {
     position: absolute;
-    top: 50;
-    left: 50;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 100%;
     height: 100%;
     z-index: 1;
@@ -233,7 +229,7 @@ body {
 .hero-names {
     margin-top: -30px;
     transform: translateY(-10px);
-    font-family: 'Dancing Script', cursive;
+    font-family: 'Great Vibes', cursive;
     font-size: clamp(3rem, 8vw, 6rem);
     font-weight: 700;
     color: #FFFFFF;
@@ -261,7 +257,7 @@ body {
 }
 
 .hero-date {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Great Vibes', serif;
     font-size: clamp(1.5rem, 4vw, 2.5rem);
     color: #FFFFFF;
     margin-bottom: 20px;
@@ -296,6 +292,19 @@ body {
     font-family: 'Caveat', cursive;
     font-size: clamp(1.1rem, 2vw, 1.4rem);
     font-weight: 500;
+}
+
+.mini-heart {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+    color: var(--accent);
+    animation: heartbeat 2s ease-in-out infinite;
+}
+
+.mini-heart svg {
+    width: 30px;
+    height: 30px;
 }
 
 .scroll-indicator {
@@ -367,7 +376,7 @@ body {
 
 /* Секции */
 section {
-    padding: 100px 0;
+    padding-top: 0;
     position: relative;
     z-index: 2;
 }
@@ -377,7 +386,7 @@ section {
     font-size: clamp(2.5rem, 5vw, 4rem);
     text-align: center;
     color: var(--text-dark);
-    margin-bottom: 60px;
+    margin-bottom: 20px;
     font-weight: 600;
     opacity: 0;
     transform: translateY(30px);
@@ -394,9 +403,6 @@ section {
     background: var(--cream);
     position: relative;
     margin-top: -1px;
-}
-
-.story {
     padding-bottom: 10px;
 }
 
@@ -440,7 +446,6 @@ section {
 .story-heart {
     text-align: center;
     margin: 40px 0;
-    animation: heartbeat 2s ease-in-out infinite;
     color: var(--accent);
 }
 
@@ -448,7 +453,6 @@ section {
     width: 60px;
     height: 60px;
     filter: drop-shadow(0 2px 8px rgba(212, 165, 165, 0.3));
-    text-align: center;
     margin-top: 10px;     /* меньше сверху */
     margin-bottom: -20px; /* тянем сердечко вниз к деталям */
     animation: heartbeat 2s ease-in-out infinite;
@@ -522,20 +526,6 @@ section {
     height: 100%;
 }
 
-.detail-card h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
-    color: var(--text-dark);
-    margin-bottom: 10px;
-    font-weight: 600;
-}
-
-.detail-card p {
-    font-size: 1rem;
-    color: var(--text-light);
-    font-weight: 300;
-}
-
 /* Тайминг */
 .timing-list {
     display: flex;
@@ -586,19 +576,15 @@ section {
 }
 
 /* Место проведения */
-.detail-card-location {
-    grid-column: span 1;
-}
-
 @media (min-width: 1024px) {
-    .detail-card-location {
-        grid-column: span 2;
+    .details-grid {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
 .location-name {
     font-family: 'Playfair Display', serif;
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: var(--text-dark);
     font-weight: 600;
     margin: 15px 0 10px;
@@ -671,19 +657,6 @@ section {
     grid-column: span 1;
 }
 
-@media (min-width: 1024px) {
-    .detail-card-timing {
-        grid-column: span 2;
-    }
-}
-
-.dresscode-text {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.3rem;
-    color: var(--text-dark);
-    font-weight: 600;
-    margin: 15px 0 20px;
-}
 
 .dresscode-colors {
     display: flex;
@@ -846,8 +819,9 @@ section {
     font-size: 1.1rem;
     font-weight: 300;
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(5px);
     transition: all 0.8s ease-out;
+
 }
 
 .guests-subtitle.visible {
@@ -1041,43 +1015,43 @@ section {
 }
 
 /* Благодарность */
+
 .thanks {
+    margin-top: 30px;
+    padding-top: 60px;
     background: linear-gradient(180deg, 
         rgba(201, 212, 192, 0.3) 0%, 
         rgba(244, 230, 231, 0.4) 100%);
     min-height: 60vh;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 80px; 
+    padding-bottom: 20px;
 }
 
 .thanks-content {
     text-align: center;
     max-width: 700px;
-    margin: 0 auto;
-    opacity: 0;
-    transform: translateY(30px);
+    margin: 0;
+    margin-bottom: 20px;
+    opacity: 1; /* если нет анимации — можно убрать */
+    transform: none;
     transition: all 0.8s ease-out;
 }
 
-.thanks-content.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
 .thanks-content p {
-    font-size: clamp(1.1rem, 2vw, 1.3rem);
-    line-height: 1.8;
-    color: var(--text-dark);
-    margin-bottom: 30px;
-    font-weight: 300;
+    margin: 0; /* убираем лишний отступ */
 }
 
 .thanks-signature {
-    font-family: 'Dancing Script', cursive;
-    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-family: 'Great Vibes', cursive;
+    font-size: 2rem;
     color: var(--accent);
-    margin-top: 40px;
     font-weight: 600;
+    text-align: center;
+    margin: 0;
+    margin-top: 0px;
 }
 
 /* Анимации */
@@ -1365,4 +1339,77 @@ section {
     font-size: 1.2rem;    /* меньше, чем заголовок */
     line-height: 1.6;
     text-align: center;
+}
+
+.calendar {
+    width: 100%;
+}
+
+.calendar-header {
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+    font-size: 12px; /* меньше → не ломает блок */
+}
+
+.calendar-grid div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.heart-day span {
+    display: block;
+    transform: rotate(45deg);
+}
+
+.heart-day {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    text-align: center;
+    display: flex;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #fff;
+    font-weight: bold;
+
+    background: #e74c3c;
+    transform: rotate(-45deg) translateX(-3px) !important;
+}
+
+
+/* два кружка сверху */
+.heart-day::before,
+.heart-day::after {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: #e74c3c;
+    border-radius: 50%;
+    z-index: -1; /* важно — уводим назад */
+}
+
+/* левый круг */
+.heart-day::before {
+    top: -9px;
+    left: 0;
+}
+
+/* правый круг */
+.heart-day::after {
+    left: 9px;
+    top: 0;
 }
