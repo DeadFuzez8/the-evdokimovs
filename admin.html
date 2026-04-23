@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Админка гостей</title>
+    <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+<div class="bg-blur bg-blur-1"></div>
+<div class="bg-blur bg-blur-2"></div>
+
+<main class="page">
+    <section class="auth-shell" id="authShell">
+        <div class="auth-card">
+            <div class="auth-badge">Wedding Admin</div>
+            <h1 class="auth-title">Вход в админку</h1>
+            <p class="auth-subtitle">
+                Войдите, чтобы посмотреть ответы гостей
+            </p>
+
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="email" placeholder="admin@example.com" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input id="password" name="password" type="password" placeholder="••••••••" required />
+                </div>
+
+                <button type="submit" class="primary-btn">Войти</button>
+            </form>
+
+            <p class="auth-error" id="authError"></p>
+        </div>
+    </section>
+
+    <section class="admin-shell hidden" id="adminShell">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">Панель управления</p>
+                <h1 class="page-title">Ответы гостей</h1>
+                <p class="page-subtitle" id="adminUserEmail"></p>
+            </div>
+
+            <div class="topbar-actions">
+                <button id="refreshBtn" class="secondary-btn">Обновить</button>
+                <button id="logoutBtn" class="danger-btn">Выйти</button>
+            </div>
+        </header>
+
+        <section class="stats-grid" id="statsGrid">
+            <article class="stat-card">
+                <span class="stat-label">Всего ответов</span>
+                <span class="stat-value" id="statTotal">0</span>
+            </article>
+
+            <article class="stat-card">
+                <span class="stat-label">Придут</span>
+                <span class="stat-value success" id="statYes">0</span>
+            </article>
+
+            <article class="stat-card">
+                <span class="stat-label">Не смогут</span>
+                <span class="stat-value muted" id="statNo">0</span>
+            </article>
+
+            <article class="stat-card">
+                <span class="stat-label">Без алкоголя</span>
+                <span class="stat-value accent" id="statNoAlcohol">0</span>
+            </article>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Список ответов</h2>
+                    <p>Все записи из базы данных</p>
+                </div>
+
+                <div class="panel-tools">
+                    <input
+                            type="text"
+                            id="searchInput"
+                            class="search-input"
+                            placeholder="Поиск по имени или телефону"
+                    />
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table class="responses-table">
+                    <thead>
+                    <tr>
+                        <th>Гость</th>
+                        <th>Телефон</th>
+                        <th>Присутствие</th>
+                        <th>Напитки</th>
+                        <th>Дата ответа</th>
+                    </tr>
+                    </thead>
+                    <tbody id="responsesTableBody">
+                    <tr>
+                        <td colspan="5" class="empty-cell">Загрузка данных...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="admin.js"></script>
+</body>
+</html>

@@ -329,6 +329,7 @@ body {
     content: '';
     position: absolute;
     bottom: 0;
+
     left: 58%;
     width: 10px;
     height: 10px;
@@ -1154,8 +1155,8 @@ section {
         grid-column: auto !important;
         grid-row: auto !important;
         min-height: auto;
-    } gap: 25px;
     }
+    
     
     .hero {
         min-height: 90vh;

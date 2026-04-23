@@ -1,3 +1,11 @@
+const SUPABASE_URL = 'https://yivgtnnbmjwdiouqbqum.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_TLc7OA2h5fSvvr7ms6NRYg_59GWUzmL';
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
+
 // Плавное появление элементов при скролле
 const observerOptions = {
     threshold: 0.1,
@@ -33,8 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
             observer.observe(card);
         }, index * 100);
     });
-
-    
 
     // Элементы галереи
     const galleryItems = document.querySelectorAll('.gallery-item');
@@ -177,30 +183,82 @@ document.head.appendChild(style);
 // Инициализация эффекта дыхания
 addBreathingEffect();
 
-// Функция для загрузки подтвержденных гостей из localStorage
-function loadConfirmedGuests() {
-    const confirmed = JSON.parse(localStorage.getItem('confirmedGuests') || '{}');
-    Object.keys(confirmed).forEach(guestName => {
-        const guestItem = document.querySelector(`[data-guest="${guestName}"]`);
-        if (guestItem) {
-            guestItem.classList.add('confirmed');
-        }
-    });
+function getGuestItemByName(guestName) {
+    return Array.from(document.querySelectorAll('.guest-item')).find(
+        (item) => item.dataset.guest === guestName
+    );
 }
 
-// Функция для сохранения подтвержденного гостя
-function saveConfirmedGuest(guestName, phone) {
+async function loadConfirmedGuests() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('guest_statuses')
+            .select('guest_name');
+
+        if (error) {
+            throw error;
+        }
+
+        data.forEach((row) => {
+            const guestItem = getGuestItemByName(row.guest_name);
+            if (guestItem) {
+                guestItem.classList.add('confirmed');
+            }
+        });
+    } catch (error) {
+        console.error('Ошибка загрузки подтвержденных гостей:', error);
+    }
+}
+
+async function saveGuestStatusToSupabase(guestName) {
+    const { error } = await supabaseClient
+        .from('guest_statuses')
+        .insert([
+            {
+                guest_name: guestName
+            }
+        ]);
+
+    if (error) {
+        // Если запись уже существует — просто игнорируем
+        if (error.code === '23505') {
+            return;
+        }
+
+        throw error;
+    }
+}
+
+function saveConfirmedGuestLocal(guestName, payload) {
     const confirmed = JSON.parse(localStorage.getItem('confirmedGuests') || '{}');
+
     confirmed[guestName] = {
-        phone: phone,
+        ...payload,
         date: new Date().toISOString()
     };
+
     localStorage.setItem('confirmedGuests', JSON.stringify(confirmed));
-    
-    // Обновляем визуальное состояние
-    const guestItem = document.querySelector(`[data-guest="${guestName}"]`);
+
+    const guestItem = getGuestItemByName(guestName);
     if (guestItem) {
         guestItem.classList.add('confirmed');
+    }
+}
+
+async function saveGuestResponseToSupabase({ guestName, phone, attendance, drinks }) {
+    const { error } = await supabaseClient
+        .from('guest_responses')
+        .insert([
+            {
+                guest_name: guestName,
+                phone: phone,
+                attendance: attendance,
+                drinks: drinks
+            }
+        ]);
+
+    if (error) {
+        throw error;
     }
 }
 
@@ -259,39 +317,71 @@ if (guestModal) {
 
 // Обработка формы подтверждения гостя
 if (guestConfirmForm) {
-    guestConfirmForm.addEventListener('submit', (e) => {
+    guestConfirmForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
-        const phone = document.getElementById('guestPhone').value;
-        
+
+        const phone = document.getElementById('guestPhone').value.trim();
+        const attendanceInput = guestConfirmForm.querySelector('input[name="attendance"]:checked');
+        const drinksInputs = guestConfirmForm.querySelectorAll('input[name="drinks"]:checked');
+        const drinks = Array.from(drinksInputs).map((input) => input.value);
+
         if (!currentGuestName) return;
-        
-        // Сохраняем подтверждение
-        saveConfirmedGuest(currentGuestName, phone);
-        
-        // Показываем сообщение об успехе
+
+        if (!attendanceInput) {
+            alert('Пожалуйста, выберите, сможете ли вы присутствовать.');
+            return;
+        }
+
+        const attendance = attendanceInput.value;
         const submitBtn = guestConfirmForm.querySelector('.submit-btn');
         const originalText = submitBtn.textContent;
-        
-        submitBtn.textContent = 'Подтверждено! ✓';
-        submitBtn.style.background = 'linear-gradient(135deg, var(--sage) 0%, #B5C5A5 100%)';
+
+        submitBtn.textContent = 'Отправляем...';
         submitBtn.disabled = true;
-        
-        // Закрываем модальное окно через 1.5 секунды
-        setTimeout(() => {
-            guestModal.classList.remove('active');
-            document.body.style.overflow = '';
-            guestConfirmForm.reset();
+
+        try {
+            await saveGuestResponseToSupabase({
+                guestName: currentGuestName,
+                phone,
+                attendance,
+                drinks
+            });
+            await saveGuestStatusToSupabase(currentGuestName);
+
+            // Локально помечаем карточку как подтвержденную
+            saveConfirmedGuestLocal(currentGuestName, {
+                phone,
+                attendance,
+                drinks
+            });
+
+
+            submitBtn.textContent = 'Подтверждено! ✓';
+            submitBtn.style.background = 'linear-gradient(135deg, var(--sage) 0%, #B5C5A5 100%)';
+
+            console.log('Подтверждение гостя сохранено:', {
+                name: currentGuestName,
+                phone,
+                attendance,
+                drinks
+            });
+
+            setTimeout(() => {
+                guestModal.classList.remove('active');
+                document.body.style.overflow = '';
+                guestConfirmForm.reset();
+                submitBtn.textContent = originalText;
+                submitBtn.style.background = '';
+                submitBtn.disabled = false;
+            }, 1500);
+        } catch (error) {
+            console.error('Ошибка сохранения в Supabase:', error);
+            alert('Не удалось сохранить ответ. Проверь настройки Supabase и попробуй еще раз.');
+
             submitBtn.textContent = originalText;
             submitBtn.style.background = '';
             submitBtn.disabled = false;
-        }, 1500);
-        
-        // В реальном приложении здесь будет отправка данных на сервер
-        console.log('Подтверждение гостя:', {
-            name: currentGuestName,
-            phone: phone
-        });
+        }
     });
 }
 
