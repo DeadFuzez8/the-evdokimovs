@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Иван & Елизавета | 08.08.26</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cedarville+Cursive&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Декоративные элементы -->
@@ -295,12 +296,15 @@
             <h3 class="modal-title">Подтверждение присутствия</h3>
             <p class="modal-guest-name" id="modalGuestName"></p>
             <form class="modal-form" id="guestConfirmForm" method="POST">
-                <div class="form-group">
-                    <input 
-                    type="text" 
-                    id="guestPhone" 
+            <div class="form-group">
+                <input 
+                    type="tel"
+                    id="guestPhone"
                     name="guestPhone"
                     placeholder="+7 (___) ___-__-__"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    autocomplete="tel"
                     required
                     >
                 </div>
@@ -414,6 +418,6 @@
 </section>
     <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/inputmask.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js?v=1" ></script>
+    <script src="script.js?v=1"></script>
 </body>
 </html>
