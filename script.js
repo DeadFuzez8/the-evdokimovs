@@ -448,3 +448,12 @@ for (let i = 0; i < 60; i++) {
 
     container.appendChild(heart);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const video = document.querySelector('.hero-video');
+    if (video) {
+        video.play().catch(() => {
+            console.log('Автовоспроизведение заблокировано');
+        });
+    }
+});
