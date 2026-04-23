@@ -51,11 +51,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Список гостей
-    const guestsSubtitle = document.querySelector('.guests-subtitle');
-    if (guestsSubtitle) {
-        observer.observe(guestsSubtitle);
-    }
-
+    const guestsSubtitle = document.querySelectorAll('.guests-subtitle');
+        guestsSubtitle.forEach((item, index) => {
+        setTimeout(() => {
+            observer.observe(item);
+        }, index * 150);
+    });
+    
     const guestsList = document.querySelector('.guests-list');
     if (guestsList) {
         observer.observe(guestsList);
@@ -385,6 +387,20 @@ if (guestConfirmForm) {
     });
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    const phoneInput = document.getElementById('guestPhone');
+
+    if (window.Inputmask && phoneInput) {
+        Inputmask({
+            mask: "+7 (999) 999-99-99",
+            showMaskOnFocus: true,
+            showMaskOnHover: false
+        }).mask(phoneInput);
+    } else {
+        console.error('Inputmask не загружен или нет инпута');
+    }
+});
+
 // Обратный отсчет до свадьбы
 function updateCountdown() {
     const weddingDate = new Date('2026-08-08T00:00:00');
@@ -413,3 +429,22 @@ function updateCountdown() {
 // Обновляем отсчет каждую секунду
 setInterval(updateCountdown, 1000);
 updateCountdown();
+
+const container = document.querySelector('.floating-hearts');
+
+for (let i = 0; i < 60; i++) {
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+
+    heart.style.left = (20 + Math.random() * 60) + '%';
+    heart.style.animationDuration = (20 + Math.random() * 15) + 's';
+    heart.style.animationDelay = (Math.random() * -30) + 's';
+
+    heart.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+    `;
+
+    container.appendChild(heart);
+}
