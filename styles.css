@@ -269,8 +269,8 @@ body {
 }
 
 .handwritten {
-    font-family:cursive;
-    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-family: 'Caveat', cursive;
+    font-size: clamp(2rem, 2vw, 1.4rem);
     font-weight: 500;
 }
 
@@ -405,26 +405,16 @@ section {
     transform: translateY(0);
 }
 
-.story-text p {
-    font-size: clamp(1rem, 2vw, 1.2rem);
-    line-height: 1.8;
-    color: var(--text-dark);
-    margin-bottom: 25px;
-    text-align: center;
-    font-weight: 300;
-}
-
-.story-quote {
-    font-family: cursive;
+.story-text p.story-quote {
+    font-family: 'Caveat', cursive;
     font-size: clamp(1.2rem, 2.5vw, 1.6rem);
-    line-height: 1.8;
+    line-height: 1;
     color: var(--text-dark);
     text-align: center;
     font-weight: 400;
     font-style: italic;
     margin-top: 20px;
 }
-
 .story-heart {
     text-align: center;
     margin: 40px 0;
@@ -881,12 +871,12 @@ section {
     text-align: center;
     color: var(--text-light);
     margin-bottom: 50px;
-    font-size: 1.1rem;
+    font-size: 2rem;
     font-weight: 300;
     opacity: 0;
     transform: translateY(5px);
     transition: all 0.8s ease-out;
-
+    font-family: 'Caveat', cursive;
 }
 
 .guests-subtitle.visible {
