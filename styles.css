@@ -270,8 +270,10 @@ body {
 
 .handwritten {
     font-family: 'Caveat', cursive;
-    font-size: clamp(2rem, 2vw, 1.4rem);
-    font-weight: 500;
+    font-size: 2rem;
+    line-height: 1.5rem !important;
+    display: block;
+    margin: 10px 0;
 }
 
 .mini-heart {
@@ -407,8 +409,8 @@ section {
 
 .story-text p.story-quote {
     font-family: 'Caveat', cursive;
-    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
-    line-height: 1;
+    font-size: clamp(1.5rem, 2.5vw, 1.6rem);
+    line-height: 1 !important;
     color: var(--text-dark);
     text-align: center;
     font-weight: 400;
@@ -877,6 +879,8 @@ section {
     transform: translateY(5px);
     transition: all 0.8s ease-out;
     font-family: 'Caveat', cursive;
+
+    line-height: 1.1;
 }
 
 .guests-subtitle.visible {
@@ -902,7 +906,7 @@ section {
 
 .guest-item {
     padding: 18px 20px;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(228, 228, 228, 0.7);
     backdrop-filter: blur(10px);
     border-radius: 12px;
     text-align: center;
@@ -958,6 +962,8 @@ section {
     .guests-list {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 15px;
+
+        padding: 0 16px; /* ← ВОТ ЭТО НУЖНО ДОБАВИТЬ */
     }
     
     .guest-item {
@@ -1437,7 +1443,6 @@ section {
     text-align: center;
     display: flex;
 
-    display: flex;
     align-items: center;
     justify-content: center;
 
