@@ -303,6 +303,7 @@ if (closeModal) {
         guestModal.classList.remove('active');
         document.body.style.overflow = '';
         guestConfirmForm.reset();
+        initPhoneMask();
     });
 }
 
@@ -313,6 +314,7 @@ if (guestModal) {
             guestModal.classList.remove('active');
             document.body.style.overflow = '';
             guestConfirmForm.reset();
+            initPhoneMask();
         }
     });
 }
@@ -372,6 +374,7 @@ if (guestConfirmForm) {
                 guestModal.classList.remove('active');
                 document.body.style.overflow = '';
                 guestConfirmForm.reset();
+                initPhoneMask();
                 submitBtn.textContent = originalText;
                 submitBtn.style.background = '';
                 submitBtn.disabled = false;
@@ -387,18 +390,24 @@ if (guestConfirmForm) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const phoneInput = document.getElementById('guestPhone');
+function initPhoneMask() {
+    const input = document.getElementById('guestPhone');
 
-    if (window.Inputmask && phoneInput) {
-        Inputmask({
-            mask: "+7 (999) 999-99-99",
-            showMaskOnFocus: true,
-            showMaskOnHover: false
-        }).mask(phoneInput);
-    } else {
-        console.error('Inputmask не загружен или нет инпута');
+    if (!input || typeof Inputmask === 'undefined') return;
+
+    // убираем старую маску (если была)
+    if (input.inputmask) {
+        input.inputmask.remove();
     }
+
+    Inputmask({
+        mask: "+7 (999) 999-99-99",
+        clearIncomplete: true,
+        showMaskOnHover: false
+    }).mask(input);
+}
+document.addEventListener('DOMContentLoaded', () => {
+    initPhoneMask();
 });
 
 // Обратный отсчет до свадьбы
