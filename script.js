@@ -5,6 +5,23 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
 );
+function loadScript(src) {
+    return new Promise((resolve, reject) => {
+        const existingScript = document.querySelector(`script[src="${src}"]`);
+
+        if (existingScript) {
+            resolve();
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+
+        document.body.appendChild(script);
+    });
+}
 
 // Плавное появление элементов при скролле
 const observerOptions = {
@@ -76,10 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(rsvpSubtitle);
     }
 
-    const rsvpForm = document.querySelector('.rsvp-form');
-    if (rsvpForm) {
-        observer.observe(rsvpForm);
-    }
+    
 
     // Блок благодарности
     const thanksContent = document.querySelector('.thanks-content');
@@ -88,43 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Обработка формы RSVP
-const rsvpForm = document.getElementById('rsvpForm');
-if (rsvpForm) {
-    rsvpForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const formData = {
-            familyName: document.getElementById('familyName').value,
-            phone: document.getElementById('phone').value,
-            guestsCount: document.getElementById('guestsCount').value
-        };
 
-        // Здесь можно добавить отправку данных на сервер
-        // Например, через fetch API или email сервис
-        
-        // Показываем сообщение об успехе
-        const submitBtn = rsvpForm.querySelector('.submit-btn');
-        const originalText = submitBtn.textContent;
-        
-        submitBtn.textContent = 'Отправлено! ✓';
-        submitBtn.style.background = 'linear-gradient(135deg, var(--sage) 0%, #B5C5A5 100%)';
-        submitBtn.disabled = true;
-        
-        // Очищаем форму
-        rsvpForm.reset();
-        
-        // Через 3 секунды возвращаем кнопку в исходное состояние
-        setTimeout(() => {
-            submitBtn.textContent = originalText;
-            submitBtn.style.background = '';
-            submitBtn.disabled = false;
-        }, 3000);
-        
-        // В реальном приложении здесь будет отправка данных
-        console.log('RSVP данные:', formData);
-    });
-}
+
 
 // Плавная прокрутка для якорных ссылок (если будут добавлены)
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -141,21 +120,27 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // Легкий эффект масштабирования изображения/видео при скролле
-let lastScroll = 0;
+
+const heroMedia = document.querySelector('.hero-video') || document.querySelector('.hero-image');
+
+let scrollTicking = false;
+
 window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
-    const heroImage = document.querySelector('.hero-image');
-    const heroVideo = document.querySelector('.hero-video');
-    const heroMedia = heroImage || heroVideo;
-    
-    if (heroMedia && currentScroll < window.innerHeight) {
-        // Легкое увеличение масштаба при скролле вниз для эффекта глубины
-        const scale = 1 + (currentScroll / window.innerHeight) * 0.1;
-        heroMedia.style.transform = `scale(${scale})`;
-    }
-    
-    lastScroll = currentScroll;
-});
+    if (!heroMedia || scrollTicking) return;
+
+    scrollTicking = true;
+
+    requestAnimationFrame(() => {
+        const currentScroll = window.pageYOffset;
+
+        if (currentScroll < window.innerHeight) {
+            const scale = 1 + (currentScroll / window.innerHeight) * 0.1;
+            heroMedia.style.transform = `scale(${scale})`;
+        }
+
+        scrollTicking = false;
+    });
+}, { passive: true });
 
 // Добавляем эффект "дыхания" для декоративных элементов
 const addBreathingEffect = () => {
@@ -185,12 +170,15 @@ document.head.appendChild(style);
 // Инициализация эффекта дыхания
 addBreathingEffect();
 
-function getGuestItemByName(guestName) {
-    return Array.from(document.querySelectorAll('.guest-item')).find(
-        (item) => item.dataset.guest === guestName
-    );
-}
+const guestItemsMap = new Map();
 
+document.querySelectorAll('.guest-item').forEach((item) => {
+    guestItemsMap.set(item.dataset.guest, item);
+});
+
+function getGuestItemByName(guestName) {
+    return guestItemsMap.get(guestName);
+}
 async function loadConfirmedGuests() {
     try {
         const { data, error } = await supabaseClient
@@ -272,25 +260,43 @@ const modalGuestName = document.getElementById('modalGuestName');
 let currentGuestName = '';
 
 // Загружаем подтвержденных гостей при загрузке страницы
-document.addEventListener('DOMContentLoaded', () => {
-    loadConfirmedGuests();
-});
+let confirmedGuestsLoaded = false;
+
+const guestsSection = document.querySelector('#guests');
+
+if (guestsSection) {
+    const guestsObserver = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && !confirmedGuestsLoaded) {
+            confirmedGuestsLoaded = true;
+            loadConfirmedGuests();
+            guestsObserver.disconnect();
+        }
+    }, {
+        rootMargin: '200px'
+    });
+
+    guestsObserver.observe(guestsSection);
+}
 
 // Обработка клика на карточку гостя
 document.addEventListener('DOMContentLoaded', () => {
     const guestItems = document.querySelectorAll('.guest-item');
     
     guestItems.forEach(item => {
-        item.addEventListener('click', (e) => {
+        
+        item.addEventListener('click', async () => {
             const guestName = item.getAttribute('data-guest');
-            
-            // Если гость уже подтвержден, не открываем модальное окно
+
             if (item.classList.contains('confirmed')) {
                 return;
             }
-            
+
             currentGuestName = guestName;
             modalGuestName.textContent = guestName;
+
+            await loadScript('inputmask.min.js');
+            initPhoneMask();
+
             guestModal.classList.add('active');
             document.body.style.overflow = 'hidden';
         });
@@ -457,44 +463,46 @@ for (let i = 0; i < heartsCount; i++) {
 
     container.appendChild(heart);
 }
-
 document.addEventListener('DOMContentLoaded', () => {
+    const loadMapBtn = document.getElementById('loadMapBtn');
+    const mapContainer = document.getElementById('mapContainer');
+
+    if (loadMapBtn && mapContainer) {
+        loadMapBtn.addEventListener('click', () => {
+            mapContainer.innerHTML = `
+                
+                    
+                    <iframe 
+                        src="https://yandex.ru/map-widget/v1/?ll=104.269697%2C52.287917&z=16&pt=104.269697%2C52.287917&l=map"
+                        width="100%" 
+                        height="250"
+                        loading="lazy"
+                        title="Карта места проведения свадьбы"
+                        style="border-radius: 12px; border: 2px solid rgba(212, 165, 165, 0.2);">
+                    </iframe>
+                    
+                
+            `;
+        }, { once: true });
+    }
+    
     const video = document.querySelector('.hero-video');
     if (!video) return;
 
-    const source = video.querySelector('source');
     const mobileMedia = window.matchMedia('(max-width: 767px)');
 
-    const updateVideoAssets = () => {
-        const isMobile = mobileMedia.matches;
-
-        const newPoster = isMobile
+    const updatePoster = () => {
+        video.poster = mobileMedia.matches
             ? video.dataset.posterMobile
             : video.dataset.posterDesktop;
-
-        const newVideoSrc = isMobile
-            ? video.dataset.videoMobile
-            : video.dataset.videoDesktop;
-
-        if (video.poster !== newPoster) {
-            video.poster = newPoster;
-        }
-
-        if (source.getAttribute('src') !== newVideoSrc) {
-            source.setAttribute('src', newVideoSrc);
-            video.load();
-
-            video.play().catch(() => {
-                console.log('Автовоспроизведение заблокировано');
-            });
-        }
     };
 
-    updateVideoAssets();
+    updatePoster();
 
     if (mobileMedia.addEventListener) {
-        mobileMedia.addEventListener('change', updateVideoAssets);
+        mobileMedia.addEventListener('change', updatePoster);
     } else {
-        mobileMedia.addListener(updateVideoAssets);
+        mobileMedia.addListener(updatePoster);
     }
 });
+

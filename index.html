@@ -8,10 +8,24 @@
     <link rel="stylesheet" href="styles.css?v=1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
     <link 
-        href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cedarville+Cursive&family=Great+Vibes&display=swap" 
-        rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cedarville+Cursive&family=Great+Vibes&display=swap" 
+    rel="stylesheet"
+    >
+    <link 
+        rel="preload" 
+        as="image" 
+        href="images/hero-poster-m.webp" 
+        media="(max-width: 767px)"
+        fetchpriority="high"
+    >
+
+    <link 
+        rel="preload" 
+        as="image" 
+        href="images/hero-poster-pc.webp" 
+        media="(min-width: 768px)"
+        fetchpriority="high"
     >
 </head>
 <body>
@@ -38,12 +52,20 @@
                 playsinline
                 preload="metadata"
                 poster="images/hero-poster-pc.webp"
-                data-video-desktop="videos/pc-v.mp4"
-                data-video-mobile="videos/mobil-v.mp4"
                 data-poster-desktop="images/hero-poster-pc.webp"
                 data-poster-mobile="images/hero-poster-m.webp"
             >
-                <source src="videos/pc-v.mp4" type="video/mp4">
+               <source 
+                    src="videos/mobil-v.mp4" 
+                    type="video/mp4" 
+                    media="(max-width: 767px)"
+                >
+
+                <source 
+                    src="videos/pc-v.mp4" 
+                    type="video/mp4" 
+                    media="(min-width: 768px)"
+                >
             </video>
             <div class="hero-overlay"></div>
         </div>
@@ -165,14 +187,11 @@
                         Кировский район, Иркутск
                     </p>
                     <div class="location-map">
-                        <iframe 
-                            src="https://yandex.ru/map-widget/v1/?ll=104.269697%2C52.287917&z=16&pt=104.269697%2C52.287917&l=map"
-                            width="100%" 
-                            height="250"
-                            loading="lazy"
-                            title="Карта места проведения свадьбы"
-                            style="border-radius: 12px; border: 2px solid rgba(212, 165, 165, 0.2);">
-                        </iframe>
+                        <div class="location-map" id="mapContainer">
+                            <button class="route-link" type="button" id="loadMapBtn">
+                                Показать карту
+                            </button>
+                        </div> 
                     </div>
                     <a href="https://2gis.ru/irkutsk/inside/70030076164186429/firm/70000001052932371?m=104.269697%2C52.287917%2F20" 
                         target="_blank" 
@@ -303,7 +322,7 @@
     </section>
 
     <!-- Модальное окно подтверждения -->
-         <section>
+       
 
     <div class="modal-overlay" id="guestModal">
         <div class="modal-content">
@@ -372,7 +391,6 @@
             </form>
         </div>
     </div>
-    </section>
 
 <!-- Галерея -->
 <section class="gallery" id="gallery">
@@ -429,8 +447,7 @@
             </div>
         </div>
 </section>
-    <script src="inputmask.min.js" defer></script>
     <script src="supabase.js" defer></script>
-    <script src="script.min.js?v=3" defer></script>
+    <script src="script.min.js?v=4" defer></script>
 </body>
 </html>
