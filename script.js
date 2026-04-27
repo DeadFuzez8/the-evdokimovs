@@ -440,8 +440,8 @@ setInterval(updateCountdown, 1000);
 updateCountdown();
 
 const container = document.querySelector('.floating-hearts');
-
-for (let i = 0; i < 60; i++) {
+const heartsCount = window.innerWidth < 768 ? 20 : 40;
+for (let i = 0; i < heartsCount; i++) {
     const heart = document.createElement('div');
     heart.className = 'heart';
 

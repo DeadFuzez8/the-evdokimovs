@@ -9,8 +9,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cedarville+Cursive&display=swap" rel="stylesheet">
+    <link 
+        href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cedarville+Cursive&family=Great+Vibes&display=swap" 
+        rel="stylesheet"
+    >
 </head>
 <body>
     <!-- Декоративные элементы -->
@@ -28,7 +30,16 @@
     <!-- Hero Section -->
     <section class="hero" id="hero">
         <div class="hero-image-wrapper">
-            <video class="hero-video" autoplay muted loop playsinline>
+            <video 
+                class="hero-video" 
+                autoplay 
+                muted 
+                loop 
+                playsinline
+                preload="metadata"
+                poster="images/hero-poster.jpg"
+            >
+                <source src="videos/hero-video.webm" type="video/webm">
                 <source src="videos/hero-video.mp4" type="video/mp4">
             </video>
             <div class="hero-overlay"></div>
@@ -289,6 +300,8 @@
     </section>
 
     <!-- Модальное окно подтверждения -->
+         <section>
+
     <div class="modal-overlay" id="guestModal">
         <div class="modal-content">
             <button class="modal-close" id="closeModal">&times;</button>
@@ -356,7 +369,6 @@
             </form>
         </div>
     </div>
-        </div>
     </section>
 
 <!-- Галерея -->
@@ -366,22 +378,22 @@
 
         <div class="gallery-grid">
             <div class="gallery-item">
-                <img src="images/photo1.jpg" alt="Фото 1">
+                <img src="images/photo1.jpg" alt="Фото 1" loading="lazy" decoding="async">
             </div>
             <div class="gallery-item">
-                <img src="images/photo2.jpg" alt="Фото 2">
+                <img src="images/photo2.jpg" alt="Фото 2" loading="lazy" decoding="async">
             </div>
             <div class="gallery-item">
-                <img src="images/photo3.jpg" alt="Фото 3">
+                <img src="images/photo3.jpg" alt="Фото 3" loading="lazy" decoding="async">
             </div>
             <div class="gallery-item">
-                <img src="images/photo4.jpg" alt="Фото 4">
+                <img src="images/photo4.jpg" alt="Фото 4" loading="lazy" decoding="async">
             </div>
             <div class="gallery-item">
-                <img src="images/photo5.jpg" alt="Фото 5">
+                <img src="images/photo5.jpg" alt="Фото 5" loading="lazy" decoding="async">
             </div>
             <div class="gallery-item">
-                <img src="images/photo6.jpg" alt="Фото 6">
+                <img src="images/photo6.jpg" alt="Фото 6" loading="lazy" decoding="async">
             </div>
         </div>
     </div>
@@ -414,8 +426,8 @@
             </div>
         </div>
 </section>
-    <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/inputmask.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js?v=1"></script>
+    <script src="inputmask.min.js" defer></script>
+    <script src="supabase.js" defer></script>
+    <script src="script.js?v=1" defer></script>
 </body>
 </html>
