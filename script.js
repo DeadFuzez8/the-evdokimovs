@@ -532,23 +532,6 @@ if (container) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const loadMapBtn = document.getElementById('loadMapBtn');
-    const mapContainer = document.getElementById('mapContainer');
-
-    if (loadMapBtn && mapContainer) {
-        loadMapBtn.addEventListener('click', () => {
-            mapContainer.innerHTML = `
-                <iframe 
-                    src="https://yandex.ru/map-widget/v1/?ll=104.269697%2C52.287917&z=16&pt=104.269697%2C52.287917&l=map"
-                    width="100%" 
-                    height="250"
-                    loading="lazy"
-                    title="Карта места проведения свадьбы"
-                    style="border-radius: 12px; border: 2px solid rgba(212, 165, 165, 0.2);">
-                </iframe>
-            `;
-        }, { once: true });
-    }
 
     const video = document.querySelector('.hero-video');
 
