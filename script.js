@@ -509,8 +509,6 @@ if (container) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
- 
-
     const video = document.querySelector('.hero-video');
 
     if (!video) return;
@@ -523,11 +521,31 @@ document.addEventListener('DOMContentLoaded', () => {
             : video.dataset.posterDesktop;
     };
 
+    const playHeroVideo = () => {
+        video.muted = true;
+        video.playsInline = true;
+
+        const playPromise = video.play();
+
+        if (playPromise !== undefined) {
+            playPromise.catch(() => {
+                console.log('Автовоспроизведение видео заблокировано браузером');
+            });
+        }
+    };
+
     updatePoster();
+    playHeroVideo();
 
     if (mobileMedia.addEventListener) {
-        mobileMedia.addEventListener('change', updatePoster);
+        mobileMedia.addEventListener('change', () => {
+            updatePoster();
+            playHeroVideo();
+        });
     } else {
-        mobileMedia.addListener(updatePoster);
+        mobileMedia.addListener(() => {
+            updatePoster();
+            playHeroVideo();
+        });
     }
 });
