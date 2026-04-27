@@ -6,6 +6,30 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_ANON_KEY
 );
 
+function loadScript(src) {
+    return new Promise((resolve, reject) => {
+        if (typeof Inputmask !== 'undefined') {
+            resolve();
+            return;
+        }
+
+        const existingScript = document.querySelector(`script[src="${src}"]`);
+
+        if (existingScript) {
+            existingScript.addEventListener('load', resolve, { once: true });
+            existingScript.addEventListener('error', reject, { once: true });
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+
+        document.body.appendChild(script);
+    });
+}
+
 // Плавное появление элементов при скролле
 const observerOptions = {
     threshold: 0.1,
@@ -267,16 +291,14 @@ if (guestsSection) {
     guestsObserver.observe(guestsSection);
 }
 
-// Нативная маска телефона без Inputmask
-function getPhoneDigits(value) {
+// Телефон для проверки перед отправкой
+function normalizePhoneValue(value) {
     let digits = String(value || '').replace(/\D/g, '');
 
-    // Если вставили +7XXXXXXXXXX или 8XXXXXXXXXX
-    if (digits.length > 10 && (digits.startsWith('7') || digits.startsWith('8'))) {
+    if (digits.length === 11 && (digits.startsWith('7') || digits.startsWith('8'))) {
         digits = digits.slice(1);
     }
 
-    // Если всё равно больше 10 цифр — берём последние 10
     if (digits.length > 10) {
         digits = digits.slice(-10);
     }
@@ -284,73 +306,22 @@ function getPhoneDigits(value) {
     return digits.slice(0, 10);
 }
 
-function formatPhoneValue(value) {
-    const digits = getPhoneDigits(value);
-
-    if (!digits) {
-        return '';
-    }
-
-    let result = '+7 ';
-
-    if (digits.length <= 3) {
-        return result + `(${digits}`;
-    }
-
-    result += `(${digits.slice(0, 3)}) `;
-
-    if (digits.length <= 6) {
-        return result + digits.slice(3);
-    }
-
-    result += `${digits.slice(3, 6)}-`;
-
-    if (digits.length <= 8) {
-        return result + digits.slice(6);
-    }
-
-    result += `${digits.slice(6, 8)}-${digits.slice(8, 10)}`;
-
-    return result;
-}
-
-function normalizePhoneValue(value) {
-    return getPhoneDigits(value);
-}
-
-let phoneMaskInitialized = false;
-
-function setCursorToEnd(input) {
-    const position = input.value.length;
-
-    input.setSelectionRange(position, position);
-}
-
+// Inputmask как было
 function initPhoneMask() {
     const input = document.getElementById('guestPhone');
 
-    if (!input || phoneMaskInitialized) return;
+    if (!input || typeof Inputmask === 'undefined') return;
 
-    input.addEventListener('input', () => {
-        input.value = formatPhoneValue(input.value);
-        setCursorToEnd(input);
-    });
+    // Убираем старую маску, если была
+    if (input.inputmask) {
+        input.inputmask.remove();
+    }
 
-    input.addEventListener('paste', (event) => {
-        event.preventDefault();
-
-        const clipboardData = event.clipboardData || window.clipboardData;
-        const pastedValue = clipboardData ? clipboardData.getData('text') : '';
-
-        input.value = formatPhoneValue(pastedValue);
-        setCursorToEnd(input);
-    });
-
-    input.addEventListener('change', () => {
-        input.value = formatPhoneValue(input.value);
-    });
-
-    phoneMaskInitialized = true;
+    Inputmask({
+        mask: '+7 (999) 999-99-99',
+        clearIncomplete: true,
+        showMaskOnHover: false
+    }).mask(input);
 }
 
 // Обработка клика на карточку гостя
@@ -358,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const guestItems = document.querySelectorAll('.guest-item');
 
     guestItems.forEach((item) => {
-        item.addEventListener('click', () => {
+        item.addEventListener('click', async () => {
             const guestName = item.getAttribute('data-guest');
 
             if (item.classList.contains('confirmed')) {
@@ -368,6 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currentGuestName = guestName;
             modalGuestName.textContent = guestName;
 
+            await loadScript('inputmask.min.js');
             initPhoneMask();
 
             guestModal.classList.add('active');
@@ -385,6 +357,8 @@ if (closeModal) {
         if (guestConfirmForm) {
             guestConfirmForm.reset();
         }
+
+        initPhoneMask();
     });
 }
 
@@ -398,6 +372,8 @@ if (guestModal) {
             if (guestConfirmForm) {
                 guestConfirmForm.reset();
             }
+
+            initPhoneMask();
         }
     });
 }
@@ -464,6 +440,7 @@ if (guestConfirmForm) {
                 guestModal.classList.remove('active');
                 document.body.style.overflow = '';
                 guestConfirmForm.reset();
+                initPhoneMask();
 
                 submitBtn.textContent = originalText;
                 submitBtn.style.background = '';
@@ -532,23 +509,7 @@ if (container) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const loadMapBtn = document.getElementById('loadMapBtn');
-    const mapContainer = document.getElementById('mapContainer');
-
-    if (loadMapBtn && mapContainer) {
-        loadMapBtn.addEventListener('click', () => {
-            mapContainer.innerHTML = `
-                <iframe 
-                    src="https://yandex.ru/map-widget/v1/?ll=104.269697%2C52.287917&z=16&pt=104.269697%2C52.287917&l=map"
-                    width="100%" 
-                    height="250"
-                    loading="lazy"
-                    title="Карта места проведения свадьбы"
-                    style="border-radius: 12px; border: 2px solid rgba(212, 165, 165, 0.2);">
-                </iframe>
-            `;
-        }, { once: true });
-    }
+ 
 
     const video = document.querySelector('.hero-video');
 
