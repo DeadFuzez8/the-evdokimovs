@@ -5,23 +5,6 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
 );
-function loadScript(src) {
-    return new Promise((resolve, reject) => {
-        const existingScript = document.querySelector(`script[src="${src}"]`);
-
-        if (existingScript) {
-            resolve();
-            return;
-        }
-
-        const script = document.createElement('script');
-        script.src = src;
-        script.onload = resolve;
-        script.onerror = reject;
-
-        document.body.appendChild(script);
-    });
-}
 
 // Плавное появление элементов при скролле
 const observerOptions = {
@@ -30,7 +13,7 @@ const observerOptions = {
 };
 
 const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
+    entries.forEach((entry) => {
         if (entry.isIntersecting) {
             entry.target.classList.add('visible');
         }
@@ -39,77 +22,76 @@ const observer = new IntersectionObserver((entries) => {
 
 // Наблюдаем за всеми элементами, которые должны появляться
 document.addEventListener('DOMContentLoaded', () => {
-    // Секции с заголовками
     const sectionTitles = document.querySelectorAll('.section-title');
-    sectionTitles.forEach(title => {
+
+    sectionTitles.forEach((title) => {
         observer.observe(title);
     });
 
-    // Контент истории
     const storyContent = document.querySelector('.story-content');
+
     if (storyContent) {
         observer.observe(storyContent);
     }
 
-    // Карточки деталей
     const detailCards = document.querySelectorAll('.detail-card');
+
     detailCards.forEach((card, index) => {
         setTimeout(() => {
             observer.observe(card);
         }, index * 100);
     });
 
-    // Элементы галереи
     const galleryItems = document.querySelectorAll('.gallery-item');
+
     galleryItems.forEach((item, index) => {
         setTimeout(() => {
             observer.observe(item);
         }, index * 150);
     });
 
-    // Список гостей
     const guestsSubtitle = document.querySelectorAll('.guests-subtitle');
-        guestsSubtitle.forEach((item, index) => {
+
+    guestsSubtitle.forEach((item, index) => {
         setTimeout(() => {
             observer.observe(item);
         }, index * 150);
     });
-    
+
     const guestsList = document.querySelector('.guests-list');
+
     if (guestsList) {
         observer.observe(guestsList);
     }
 
     const guestItems = document.querySelectorAll('.guest-item');
+
     guestItems.forEach((item, index) => {
         setTimeout(() => {
             observer.observe(item);
         }, index * 50);
     });
 
-    // RSVP форма
     const rsvpSubtitle = document.querySelector('.rsvp-subtitle');
+
     if (rsvpSubtitle) {
         observer.observe(rsvpSubtitle);
     }
 
-    
-
-    // Блок благодарности
     const thanksContent = document.querySelector('.thanks-content');
+
     if (thanksContent) {
         observer.observe(thanksContent);
     }
 });
 
-
-
-
-// Плавная прокрутка для якорных ссылок (если будут добавлены)
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+// Плавная прокрутка для якорных ссылок
+document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
+
         const target = document.querySelector(this.getAttribute('href'));
+
         if (target) {
             target.scrollIntoView({
                 behavior: 'smooth',
@@ -120,7 +102,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // Легкий эффект масштабирования изображения/видео при скролле
-
 const heroMedia = document.querySelector('.hero-video') || document.querySelector('.hero-image');
 
 let scrollTicking = false;
@@ -145,6 +126,7 @@ window.addEventListener('scroll', () => {
 // Добавляем эффект "дыхания" для декоративных элементов
 const addBreathingEffect = () => {
     const petals = document.querySelectorAll('.petal');
+
     petals.forEach((petal, index) => {
         const delay = index * 2;
         petal.style.animation = `float 20s infinite ease-in-out, breathe 4s ${delay}s infinite ease-in-out`;
@@ -153,23 +135,26 @@ const addBreathingEffect = () => {
 
 // Добавляем CSS для эффекта дыхания через JavaScript
 const style = document.createElement('style');
+
 style.textContent = `
     @keyframes breathe {
         0%, 100% {
             opacity: 0.3;
             transform: scale(1);
         }
+
         50% {
             opacity: 0.5;
             transform: scale(1.1);
         }
     }
 `;
+
 document.head.appendChild(style);
 
-// Инициализация эффекта дыхания
 addBreathingEffect();
 
+// Карта гостей для быстрого поиска
 const guestItemsMap = new Map();
 
 document.querySelectorAll('.guest-item').forEach((item) => {
@@ -179,6 +164,7 @@ document.querySelectorAll('.guest-item').forEach((item) => {
 function getGuestItemByName(guestName) {
     return guestItemsMap.get(guestName);
 }
+
 async function loadConfirmedGuests() {
     try {
         const { data, error } = await supabaseClient
@@ -191,6 +177,7 @@ async function loadConfirmedGuests() {
 
         data.forEach((row) => {
             const guestItem = getGuestItemByName(row.guest_name);
+
             if (guestItem) {
                 guestItem.classList.add('confirmed');
             }
@@ -230,6 +217,7 @@ function saveConfirmedGuestLocal(guestName, payload) {
     localStorage.setItem('confirmedGuests', JSON.stringify(confirmed));
 
     const guestItem = getGuestItemByName(guestName);
+
     if (guestItem) {
         guestItem.classList.add('confirmed');
     }
@@ -257,9 +245,10 @@ const guestModal = document.getElementById('guestModal');
 const closeModal = document.getElementById('closeModal');
 const guestConfirmForm = document.getElementById('guestConfirmForm');
 const modalGuestName = document.getElementById('modalGuestName');
+
 let currentGuestName = '';
 
-// Загружаем подтвержденных гостей при загрузке страницы
+// Загружаем подтвержденных гостей только при приближении к блоку гостей
 let confirmedGuestsLoaded = false;
 
 const guestsSection = document.querySelector('#guests');
@@ -278,13 +267,98 @@ if (guestsSection) {
     guestsObserver.observe(guestsSection);
 }
 
+// Нативная маска телефона без Inputmask
+function getPhoneDigits(value) {
+    let digits = String(value || '').replace(/\D/g, '');
+
+    // Если вставили +7XXXXXXXXXX или 8XXXXXXXXXX
+    if (digits.length > 10 && (digits.startsWith('7') || digits.startsWith('8'))) {
+        digits = digits.slice(1);
+    }
+
+    // Если всё равно больше 10 цифр — берём последние 10
+    if (digits.length > 10) {
+        digits = digits.slice(-10);
+    }
+
+    return digits.slice(0, 10);
+}
+
+function formatPhoneValue(value) {
+    const digits = getPhoneDigits(value);
+
+    if (!digits) {
+        return '';
+    }
+
+    let result = '+7 ';
+
+    if (digits.length <= 3) {
+        return result + `(${digits}`;
+    }
+
+    result += `(${digits.slice(0, 3)}) `;
+
+    if (digits.length <= 6) {
+        return result + digits.slice(3);
+    }
+
+    result += `${digits.slice(3, 6)}-`;
+
+    if (digits.length <= 8) {
+        return result + digits.slice(6);
+    }
+
+    result += `${digits.slice(6, 8)}-${digits.slice(8, 10)}`;
+
+    return result;
+}
+
+function normalizePhoneValue(value) {
+    return getPhoneDigits(value);
+}
+
+let phoneMaskInitialized = false;
+
+function setCursorToEnd(input) {
+    const position = input.value.length;
+
+    input.setSelectionRange(position, position);
+}
+
+function initPhoneMask() {
+    const input = document.getElementById('guestPhone');
+
+    if (!input || phoneMaskInitialized) return;
+
+    input.addEventListener('input', () => {
+        input.value = formatPhoneValue(input.value);
+        setCursorToEnd(input);
+    });
+
+    input.addEventListener('paste', (event) => {
+        event.preventDefault();
+
+        const clipboardData = event.clipboardData || window.clipboardData;
+        const pastedValue = clipboardData ? clipboardData.getData('text') : '';
+
+        input.value = formatPhoneValue(pastedValue);
+        setCursorToEnd(input);
+    });
+
+    input.addEventListener('change', () => {
+        input.value = formatPhoneValue(input.value);
+    });
+
+    phoneMaskInitialized = true;
+}
+
 // Обработка клика на карточку гостя
 document.addEventListener('DOMContentLoaded', () => {
     const guestItems = document.querySelectorAll('.guest-item');
-    
-    guestItems.forEach(item => {
-        
-        item.addEventListener('click', async () => {
+
+    guestItems.forEach((item) => {
+        item.addEventListener('click', () => {
             const guestName = item.getAttribute('data-guest');
 
             if (item.classList.contains('confirmed')) {
@@ -294,7 +368,6 @@ document.addEventListener('DOMContentLoaded', () => {
             currentGuestName = guestName;
             modalGuestName.textContent = guestName;
 
-            await loadScript('inputmask.min.js');
             initPhoneMask();
 
             guestModal.classList.add('active');
@@ -308,8 +381,10 @@ if (closeModal) {
     closeModal.addEventListener('click', () => {
         guestModal.classList.remove('active');
         document.body.style.overflow = '';
-        guestConfirmForm.reset();
-        initPhoneMask();
+
+        if (guestConfirmForm) {
+            guestConfirmForm.reset();
+        }
     });
 }
 
@@ -319,8 +394,10 @@ if (guestModal) {
         if (e.target === guestModal) {
             guestModal.classList.remove('active');
             document.body.style.overflow = '';
-            guestConfirmForm.reset();
-            initPhoneMask();
+
+            if (guestConfirmForm) {
+                guestConfirmForm.reset();
+            }
         }
     });
 }
@@ -330,12 +407,20 @@ if (guestConfirmForm) {
     guestConfirmForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const phone = document.getElementById('guestPhone').value.trim();
+        const phoneInput = document.getElementById('guestPhone');
+        const phone = phoneInput.value.trim();
+        const normalizedPhone = normalizePhoneValue(phone);
+
         const attendanceInput = guestConfirmForm.querySelector('input[name="attendance"]:checked');
         const drinksInputs = guestConfirmForm.querySelectorAll('input[name="drinks"]:checked');
         const drinks = Array.from(drinksInputs).map((input) => input.value);
 
         if (!currentGuestName) return;
+
+        if (normalizedPhone.length !== 10) {
+            alert('Пожалуйста, введите корректный номер телефона.');
+            return;
+        }
 
         if (!attendanceInput) {
             alert('Пожалуйста, выберите, сможете ли вы присутствовать.');
@@ -356,15 +441,14 @@ if (guestConfirmForm) {
                 attendance,
                 drinks
             });
+
             await saveGuestStatusToSupabase(currentGuestName);
 
-            // Локально помечаем карточку как подтвержденную
             saveConfirmedGuestLocal(currentGuestName, {
                 phone,
                 attendance,
                 drinks
             });
-
 
             submitBtn.textContent = 'Подтверждено! ✓';
             submitBtn.style.background = 'linear-gradient(135deg, var(--sage) 0%, #B5C5A5 100%)';
@@ -380,7 +464,7 @@ if (guestConfirmForm) {
                 guestModal.classList.remove('active');
                 document.body.style.overflow = '';
                 guestConfirmForm.reset();
-                initPhoneMask();
+
                 submitBtn.textContent = originalText;
                 submitBtn.style.background = '';
                 submitBtn.disabled = false;
@@ -396,32 +480,12 @@ if (guestConfirmForm) {
     });
 }
 
-function initPhoneMask() {
-    const input = document.getElementById('guestPhone');
-
-    if (!input || typeof Inputmask === 'undefined') return;
-
-    // убираем старую маску (если была)
-    if (input.inputmask) {
-        input.inputmask.remove();
-    }
-
-    Inputmask({
-        mask: "+7 (999) 999-99-99",
-        clearIncomplete: true,
-        showMaskOnHover: false
-    }).mask(input);
-}
-document.addEventListener('DOMContentLoaded', () => {
-    initPhoneMask();
-});
-
 // Обратный отсчет до свадьбы
 function updateCountdown() {
     const weddingDate = new Date('2026-08-08T00:00:00');
     const now = new Date();
     const difference = weddingDate - now;
-    
+
     if (difference <= 0) {
         document.getElementById('days').textContent = '0';
         document.getElementById('hours').textContent = '0';
@@ -429,40 +493,44 @@ function updateCountdown() {
         document.getElementById('seconds').textContent = '0';
         return;
     }
-    
+
     const days = Math.floor(difference / (1000 * 60 * 60 * 24));
     const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-    
+
     document.getElementById('days').textContent = days;
     document.getElementById('hours').textContent = hours;
     document.getElementById('minutes').textContent = minutes;
     document.getElementById('seconds').textContent = seconds;
 }
 
-// Обновляем отсчет каждую секунду
 setInterval(updateCountdown, 1000);
 updateCountdown();
 
+// Декоративные сердечки
 const container = document.querySelector('.floating-hearts');
 const heartsCount = window.innerWidth < 768 ? 20 : 40;
-for (let i = 0; i < heartsCount; i++) {
-    const heart = document.createElement('div');
-    heart.className = 'heart';
 
-    heart.style.left = (20 + Math.random() * 60) + '%';
-    heart.style.animationDuration = (20 + Math.random() * 15) + 's';
-    heart.style.animationDelay = (Math.random() * -30) + 's';
+if (container) {
+    for (let i = 0; i < heartsCount; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'heart';
 
-    heart.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-        </svg>
-    `;
+        heart.style.left = (20 + Math.random() * 60) + '%';
+        heart.style.animationDuration = (20 + Math.random() * 15) + 's';
+        heart.style.animationDelay = (Math.random() * -30) + 's';
 
-    container.appendChild(heart);
+        heart.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+        `;
+
+        container.appendChild(heart);
+    }
 }
+
 document.addEventListener('DOMContentLoaded', () => {
     const loadMapBtn = document.getElementById('loadMapBtn');
     const mapContainer = document.getElementById('mapContainer');
@@ -470,23 +538,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loadMapBtn && mapContainer) {
         loadMapBtn.addEventListener('click', () => {
             mapContainer.innerHTML = `
-                
-                    
-                    <iframe 
-                        src="https://yandex.ru/map-widget/v1/?ll=104.269697%2C52.287917&z=16&pt=104.269697%2C52.287917&l=map"
-                        width="100%" 
-                        height="250"
-                        loading="lazy"
-                        title="Карта места проведения свадьбы"
-                        style="border-radius: 12px; border: 2px solid rgba(212, 165, 165, 0.2);">
-                    </iframe>
-                    
-                
+                <iframe 
+                    src="https://yandex.ru/map-widget/v1/?ll=104.269697%2C52.287917&z=16&pt=104.269697%2C52.287917&l=map"
+                    width="100%" 
+                    height="250"
+                    loading="lazy"
+                    title="Карта места проведения свадьбы"
+                    style="border-radius: 12px; border: 2px solid rgba(212, 165, 165, 0.2);">
+                </iframe>
             `;
         }, { once: true });
     }
-    
+
     const video = document.querySelector('.hero-video');
+
     if (!video) return;
 
     const mobileMedia = window.matchMedia('(max-width: 767px)');
@@ -505,4 +570,3 @@ document.addEventListener('DOMContentLoaded', () => {
         mobileMedia.addListener(updatePoster);
     }
 });
-
