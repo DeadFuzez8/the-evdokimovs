@@ -30,17 +30,20 @@
     <!-- Hero Section -->
     <section class="hero" id="hero">
         <div class="hero-image-wrapper">
-            <video 
-                class="hero-video" 
-                autoplay 
-                muted 
-                loop 
+            <video
+                class="hero-video"
+                autoplay
+                muted
+                loop
                 playsinline
                 preload="metadata"
-                poster="images/hero-poster.jpg"
+                poster="images/hero-poster-pc.webp"
+                data-video-desktop="videos/pc-v.mp4"
+                data-video-mobile="videos/mobil-v.mp4"
+                data-poster-desktop="images/hero-poster-pc.webp"
+                data-poster-mobile="images/hero-poster-m.webp"
             >
-                <source src="videos/hero-video.webm" type="video/webm">
-                <source src="videos/hero-video.mp4" type="video/mp4">
+                <source src="videos/pc-v.mp4" type="video/mp4">
             </video>
             <div class="hero-overlay"></div>
         </div>
@@ -378,22 +381,22 @@
 
         <div class="gallery-grid">
             <div class="gallery-item">
-                <img src="images/photo1.jpg" alt="Фото 1" loading="lazy" decoding="async">
+                <img src="images/photo1.webp" alt="Фото 1" loading="lazy" decoding="async">
             </div>
             <div class="gallery-item">
-                <img src="images/photo2.jpg" alt="Фото 2" loading="lazy" decoding="async">
+                <img src="images/photo2.webp" alt="Фото 2" loading="lazy" decoding="async">
             </div>
             <div class="gallery-item">
-                <img src="images/photo3.jpg" alt="Фото 3" loading="lazy" decoding="async">
+                <img src="images/photo3.webp" alt="Фото 3" loading="lazy" decoding="async">
             </div>
             <div class="gallery-item">
-                <img src="images/photo4.jpg" alt="Фото 4" loading="lazy" decoding="async">
+                <img src="images/photo4.webp" alt="Фото 4" loading="lazy" decoding="async">
             </div>
             <div class="gallery-item">
-                <img src="images/photo5.jpg" alt="Фото 5" loading="lazy" decoding="async">
+                <img src="images/photo5.webp" alt="Фото 5" loading="lazy" decoding="async">
             </div>
             <div class="gallery-item">
-                <img src="images/photo6.jpg" alt="Фото 6" loading="lazy" decoding="async">
+                <img src="images/photo6.webp" alt="Фото 6" loading="lazy" decoding="async">
             </div>
         </div>
     </div>
@@ -428,6 +431,6 @@
 </section>
     <script src="inputmask.min.js" defer></script>
     <script src="supabase.js" defer></script>
-    <script src="script.js?v=1" defer></script>
+    <script src="script.min.js?v=3" defer></script>
 </body>
 </html>

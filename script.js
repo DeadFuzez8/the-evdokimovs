@@ -460,9 +460,41 @@ for (let i = 0; i < heartsCount; i++) {
 
 document.addEventListener('DOMContentLoaded', () => {
     const video = document.querySelector('.hero-video');
-    if (video) {
-        video.play().catch(() => {
-            console.log('Автовоспроизведение заблокировано');
-        });
+    if (!video) return;
+
+    const source = video.querySelector('source');
+    const mobileMedia = window.matchMedia('(max-width: 767px)');
+
+    const updateVideoAssets = () => {
+        const isMobile = mobileMedia.matches;
+
+        const newPoster = isMobile
+            ? video.dataset.posterMobile
+            : video.dataset.posterDesktop;
+
+        const newVideoSrc = isMobile
+            ? video.dataset.videoMobile
+            : video.dataset.videoDesktop;
+
+        if (video.poster !== newPoster) {
+            video.poster = newPoster;
+        }
+
+        if (source.getAttribute('src') !== newVideoSrc) {
+            source.setAttribute('src', newVideoSrc);
+            video.load();
+
+            video.play().catch(() => {
+                console.log('Автовоспроизведение заблокировано');
+            });
+        }
+    };
+
+    updateVideoAssets();
+
+    if (mobileMedia.addEventListener) {
+        mobileMedia.addEventListener('change', updateVideoAssets);
+    } else {
+        mobileMedia.addListener(updateVideoAssets);
     }
 });
