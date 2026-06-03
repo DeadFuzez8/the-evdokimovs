@@ -409,14 +409,24 @@ if (guestConfirmForm) {
 
         submitBtn.textContent = 'Отправляем...';
         submitBtn.disabled = true;
-
-        try {
+         try {
+           
             await saveGuestResponseToSupabase({
-                guestName: currentGuestName,
-                phone,
-                attendance,
-                drinks
-            });
+                            guestName: currentGuestName,
+                            phone,
+                            attendance,
+                            drinks
+                        });
+            } catch (error) {
+            console.error('Ошибка сохранения в Supabase:', error);
+            alert('Не удалось сохранить ответ. ', error);
+
+            submitBtn.textContent = originalText;
+            submitBtn.style.background = '';
+            submitBtn.disabled = false;
+        }
+        try {
+           
 
             await saveGuestStatusToSupabase(currentGuestName);
 
@@ -448,7 +458,7 @@ if (guestConfirmForm) {
             }, 1500);
         } catch (error) {
             console.error('Ошибка сохранения в Supabase:', error);
-            alert('Не удалось сохранить ответ. Проверь настройки Supabase и попробуй еще раз.');
+            alert('Не удалось сохранить ответ. Проверь настройки Supabase и попробуй еще раз.', error);
 
             submitBtn.textContent = originalText;
             submitBtn.style.background = '';
